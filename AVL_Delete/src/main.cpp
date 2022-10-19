@@ -1,12 +1,12 @@
 #include<iostream>
 
 using namespace std;
+
 struct node
 {
     int element;
     struct node *left,*right;
-    int ht;
-
+    int alturaArbol;
 };
 
 node *insert(node *,int);
@@ -34,28 +34,28 @@ int main()
         switch(option)
         {
             case 1: cout << "\nEnter no. of elements : ";
-                    cin >> n;
-                    root = NULL;
-                    for( i = 0; i < n;i++) {
-
-                        cout << "Enter element of tree ";
-                        cin >> valor;
-                        root = insert(root, valor);
-                    }
-                    cout << "\nPreorder sequence:\n";
-                    preorder(root);
-                    cout << "\n\nInorder sequence:\n";
-                    inorder(root);
-                    break;
-             
-            case 2: cout << "Enter a element to be deleted : ";
+                cin >> n;
+                root = NULL;
+                for( i = 0; i < n;i++) {
+                    cout << "Enter element of tree ";
                     cin >> valor;
-                    root = Delete(root,valor);
-                    cout << "Preorder sequence:\n";
-                    preorder(root);
-                    cout << "\nInorder sequence:\n";
-                    inorder(root);
-                    break;
+                    root = insert(root, valor);
+                }
+                cout << "\nPreorder sequence:\n";
+                preorder(root);
+                cout << "\n\nInorder sequence:\n";
+                inorder(root);
+                break;
+             
+            case 2: 
+                cout << "Enter a element to be deleted : ";
+                cin >> valor;
+                root = Delete(root,valor);
+                cout << "Preorder sequence:\n";
+                preorder(root);
+                cout << "\nInorder sequence:\n";
+                inorder(root);
+                break;
         }
     }while(option!=3);
     
@@ -63,17 +63,15 @@ int main()
 }
 
 node * insert(node *Tree,int valor)
-    {
+{
     if(Tree == NULL){
         Tree = (node*)malloc(sizeof(node));
         Tree -> element = valor;
         Tree -> left = NULL;
         Tree -> right = NULL;
     }
-    else
-
-    if(valor > Tree->element)        {
-
+    else if(valor > Tree->element)        
+    {
         Tree -> right = insert(Tree -> right, valor);
         if(balanceFactor(Tree) == -2)
             if( valor > Tree -> right -> element)
@@ -81,20 +79,18 @@ node * insert(node *Tree,int valor)
             else
                 Tree = RL(Tree);
     }
-
-    else
-    if(valor<Tree->element)
+    else if(valor<Tree->element)
     {
-        Tree -> left = insert(Tree -> left, valor);
-        if(balanceFactor(Tree)==2)
-            if(valor < Tree-> left -> element)
-                Tree=LL(Tree);
-            else
-                Tree=LR(Tree);
+    Tree -> left = insert(Tree -> left, valor);
+    if(balanceFactor(Tree)==2)
+        if(valor < Tree-> left -> element)
+            Tree=LL(Tree);
+        else
+            Tree=LR(Tree);
 
     }
 
-    Tree -> ht = height(Tree);
+    Tree -> alturaArbol = height(Tree);
 
     return(Tree);
 }
@@ -107,8 +103,7 @@ node * Delete(node *Tree, int valor)
     {
         return NULL;
     }
-    else
-    if(valor > Tree->element)    
+    else if(valor > Tree->element)    
     {
         Tree -> right = Delete(Tree -> right, valor);
         if(balanceFactor(Tree) == 2)
@@ -117,8 +112,7 @@ node * Delete(node *Tree, int valor)
             else
                 Tree = LR(Tree);
     }
-    else
-    if(valor < Tree -> element)
+    else if(valor < Tree -> element)
     {
         Tree -> left = Delete(Tree->left, valor);
             if(balanceFactor(Tree)==-2)    
@@ -148,30 +142,29 @@ node * Delete(node *Tree, int valor)
                 else
                 return(Tree->left);
             }
-    Tree ->ht = height(Tree);
+    Tree ->alturaArbol = height(Tree);
     return(Tree);
 }
 
 int height(node *Tree)
 {
-
-    int lh,rh;
+    int alturaIzq, alturaDer;
     if(Tree == NULL)
         return(0);
     if( Tree -> left == NULL)
-        lh = 0;
+        alturaIzq = 0;
     else
-        lh = 1 + Tree -> left -> ht;
+        alturaIzq = 1 + Tree -> left -> alturaArbol;
 
     if(Tree -> right == NULL)
-        rh = 0;
+        alturaDer = 0;
     else
-        rh=1+Tree->right->ht;
+        alturaDer=1+Tree->right->alturaArbol;
 
-    if(lh > rh)
-        return(lh);
+    if(alturaIzq > alturaDer)
+        return(alturaIzq);
 
-    return(rh);
+    return(alturaDer);
 }
 
 node * rotateright(node *valor)
@@ -179,10 +172,12 @@ node * rotateright(node *valor)
 
     node *y;
     y = valor -> left;
+ 
     valor -> left = y -> right;
     y -> right = valor;
-    valor -> ht = height(valor);
-    y -> ht = height(y);
+    valor -> alturaArbol = height(valor);
+    y -> alturaArbol = height(y);
+ 
     return(y);
 }
 
@@ -190,10 +185,12 @@ node * rotateleft(node *valor)
 {
     node *y;
     y = valor -> right;
+
     valor -> right = y -> left;
     y -> left = valor;
-    valor -> ht = height(valor);
-    y -> ht = height(y);
+    valor -> alturaArbol = height(valor);
+    y -> alturaArbol = height(y);
+
     return(y);
 }
 
@@ -228,18 +225,23 @@ node * RL(node *Tree) //right left
 
 int balanceFactor(node *Tree)
 {
-    int lh,rh;
+    int alturaIzq, alturaDer;
     if( Tree == NULL)
         return(0);
+
     if(Tree -> left == NULL)
-        lh = 0;
+        alturaIzq = 0;
+
     else
-        lh = 1 + Tree->left->ht;
+        alturaIzq = 1 + Tree->left->alturaArbol;
+
     if(Tree -> right == NULL)
-        rh = 0;
+        alturaDer = 0;
+
     else
-        rh = 1 + Tree -> right -> ht;
-    return(lh-rh);
+        alturaDer = 1 + Tree -> right -> alturaArbol;
+
+    return(alturaIzq-alturaDer);
 }
 
 void preorder(node *Tree)
